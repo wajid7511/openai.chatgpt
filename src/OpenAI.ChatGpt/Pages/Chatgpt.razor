@@ -1,18 +1,57 @@
 ﻿@page "/chatgpt"
-
+@inject IChatGptService _chatGptservice
 <PageTitle>Chat Gpt</PageTitle>
 
 <h1>Chat Gpt</h1>
 
-<p role="status">Current count: @currentCount</p>
+<div class="row">
+    <div class="col">
+        <input class="col-4" type="text" @bind-value="@userInput">
+        <button class="btn btn-primary col-3" @onclick="IncrementCountAsync">Generate</button>
+    </div>
+    <br />
+    <br />
+    @if (responseDto != null)
+    {
+        if (IsLoading)
+        {
+            <p>Please wait loading data</p>
+        }
+        else
+        {
+            if (responseDto.IsError || responseDto.Response == null)
+            {
+                string error = $"Error occured while fetching data {responseDto.Exception?.ToString()}";
+                <p> @error</p>
+            }
+            else
+            {
+                foreach (var item in responseDto.Response.Choices)
+                {
+                    <h1>@item.Text</h1>
+                    <br />
+                }
+            }
+        }
+    }
+    else
+    {
+        <p>Enter your text and click on Generate</p>
+    }
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+</div>
+
 
 @code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
+    private bool IsLoading = false;
+    private string userInput = string.Empty;
+    private ChatGptResponseDto? responseDto;
+    private async Task IncrementCountAsync()
     {
-        currentCount++;
+        IsLoading = true;
+        StateHasChanged();
+        responseDto = await _chatGptservice.GetChatGptResponseAsync(userInput);
+        IsLoading = false;
+        StateHasChanged();
     }
 }
