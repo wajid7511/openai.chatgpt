@@ -13,10 +13,10 @@ public static class IServiceCollectionExtension
         services.Configure<ChatGptOptions>(configuration.GetSection(ChatGptOptions.CONFIG_PATH));
 
         services.AddHttpClient<IChatGptService, DefaultChatGptService>((serviceProvider, httpClient) =>
-    {
-        var options = serviceProvider.GetRequiredService<IOptions<ChatGptOptions>>().Value;
-        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {options.ApiKey}");
-    });
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<ChatGptOptions>>().Value;
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {options.ApiKey}");
+        });
         return services;
     }
 }
